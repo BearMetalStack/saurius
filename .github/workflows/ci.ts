@@ -744,12 +744,12 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             if: isLinux.and(isDenoland),
             run: [
               "cd target/release",
-              `./deno -A ../../tools/release/create_symcache.ts deno-${buildItem.arch}-unknown-linux-gnu.symcache`,
-              "strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr ./deno",
-              "if readelf -SW ./deno | grep -Eq '\\.eh_frame(_hdr)?'; then echo 'unwind sections remain in deno'; exit 1; fi",
-              "if readelf -lW ./deno | grep -q GNU_EH_FRAME; then echo 'PT_GNU_EH_FRAME remains in deno'; exit 1; fi",
-              `shasum -a 256 deno > deno-${buildItem.arch}-unknown-linux-gnu.sha256sum`,
-              `zip -r deno-${buildItem.arch}-unknown-linux-gnu.zip deno`,
+              `./saurius -A ../../tools/release/create_symcache.ts deno-${buildItem.arch}-unknown-linux-gnu.symcache`,
+              "strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr ./saurius",
+              "if readelf -SW ./saurius | grep -Eq '\\.eh_frame(_hdr)?'; then echo 'unwind sections remain in saurius'; exit 1; fi",
+              "if readelf -lW ./saurius | grep -q GNU_EH_FRAME; then echo 'PT_GNU_EH_FRAME remains in saurius'; exit 1; fi",
+              `shasum -a 256 saurius > deno-${buildItem.arch}-unknown-linux-gnu.sha256sum`,
+              `zip -r deno-${buildItem.arch}-unknown-linux-gnu.zip saurius`,
               `shasum -a 256 deno-${buildItem.arch}-unknown-linux-gnu.zip > deno-${buildItem.arch}-unknown-linux-gnu.zip.sha256sum`,
               // denort is the `deno compile` base binary: libsui rewrites its
               // ELF to embed user code, and that rewrite drops `.relr.dyn`
@@ -788,7 +788,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               `shasum -a 256 libdenort-quickjs-${buildItem.arch}-unknown-linux-gnu.zip > libdenort-quickjs-${buildItem.arch}-unknown-linux-gnu.zip.sha256sum`,
               "restore_v8_runtimes",
               "trap - EXIT",
-              "./deno types > lib.deno.d.ts",
+              "./saurius types > lib.deno.d.ts",
             ],
           },
           step.dependsOn(setupPrebuiltMacStep, installDenoStep)({
@@ -808,19 +808,19 @@ const buildJobs = buildItems.map((rawBuildItem) => {
                 "${{ secrets.APPLE_CODESIGN_PASSWORD }}",
             },
             run: [
-              `target/release/deno -A tools/release/create_symcache.ts target/release/deno-${buildItem.arch}-apple-darwin.symcache`,
-              "strip -x -S target/release/deno",
+              `target/release/saurius -A tools/release/create_symcache.ts target/release/deno-${buildItem.arch}-apple-darwin.symcache`,
+              "strip -x -S target/release/saurius",
               'if [[ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == refs/tags/* ]]; then',
               '  echo "Key is $(echo $APPLE_CODESIGN_KEY | base64 -d | wc -c) bytes"',
-              "  rcodesign sign target/release/deno " +
+              "  rcodesign sign target/release/saurius " +
               "--code-signature-flags=runtime " +
               '--p12-password="$APPLE_CODESIGN_PASSWORD" ' +
               "--p12-file=<(echo $APPLE_CODESIGN_KEY | base64 -d) " +
               "--entitlements-xml-file=cli/entitlements.plist",
               "fi",
               "cd target/release",
-              `shasum -a 256 deno > deno-${buildItem.arch}-apple-darwin.sha256sum`,
-              `zip -r deno-${buildItem.arch}-apple-darwin.zip deno`,
+              `shasum -a 256 saurius > deno-${buildItem.arch}-apple-darwin.sha256sum`,
+              `zip -r deno-${buildItem.arch}-apple-darwin.zip saurius`,
               `shasum -a 256 deno-${buildItem.arch}-apple-darwin.zip > deno-${buildItem.arch}-apple-darwin.zip.sha256sum`,
               "strip -x -S ./denort",
               `zip -r denort-${buildItem.arch}-apple-darwin.zip denort`,
@@ -862,7 +862,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             },
           },
           {
-            name: "Code sign deno.exe (windows)",
+            name: "Code sign saurius.exe (windows)",
             if: isWindows.and(isDenoland).and(isMainOrTag),
             uses: "Azure/artifact-signing-action@v0",
             with: {
@@ -870,7 +870,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               "trusted-signing-account-name": "deno-cli-code-signing",
               "certificate-profile-name": "deno-cli-code-signing-cert",
               "files-folder": "target/release",
-              "files-folder-filter": "deno.exe",
+              "files-folder-filter": "saurius.exe",
               "file-digest": "SHA256",
               "timestamp-rfc3161": "http://timestamp.acs.microsoft.com",
               "timestamp-digest": "SHA256",
@@ -890,7 +890,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             run: [
               '$SignTool = Get-ChildItem -Path "C:\\Program Files*\\Windows Kits\\*\\bin\\*\\x64\\signtool.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1',
               "$SignToolPath = $SignTool.FullName",
-              "& $SignToolPath verify /pa /v target\\release\\deno.exe",
+              "& $SignToolPath verify /pa /v target\\release\\saurius.exe",
             ],
           },
           {
@@ -898,8 +898,8 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             if: isWindows.and(isDenoland),
             shell: "pwsh",
             run: [
-              `Get-FileHash target/release/deno.exe -Algorithm SHA256 | Format-List > target/release/deno-${buildItem.arch}-pc-windows-msvc.sha256sum`,
-              `Compress-Archive -CompressionLevel Optimal -Force -Path target/release/deno.exe -DestinationPath target/release/deno-${buildItem.arch}-pc-windows-msvc.zip`,
+              `Get-FileHash target/release/saurius.exe -Algorithm SHA256 | Format-List > target/release/deno-${buildItem.arch}-pc-windows-msvc.sha256sum`,
+              `Compress-Archive -CompressionLevel Optimal -Force -Path target/release/saurius.exe -DestinationPath target/release/deno-${buildItem.arch}-pc-windows-msvc.zip`,
               `Get-FileHash target/release/deno-${buildItem.arch}-pc-windows-msvc.zip -Algorithm SHA256 | Format-List > target/release/deno-${buildItem.arch}-pc-windows-msvc.zip.sha256sum`,
               `Compress-Archive -CompressionLevel Optimal -Force -Path target/release/denort.exe -DestinationPath target/release/denort-${buildItem.arch}-pc-windows-msvc.zip`,
               `Get-FileHash target/release/denort-${buildItem.arch}-pc-windows-msvc.zip -Algorithm SHA256 | Format-List > target/release/denort-${buildItem.arch}-pc-windows-msvc.zip.sha256sum`,
@@ -924,7 +924,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               "  if (Test-Path target/release/denort.v8.exe) { Move-Item -Force target/release/denort.v8.exe target/release/denort.exe }",
               "  if (Test-Path target/release/denort.v8.dll) { Move-Item -Force target/release/denort.v8.dll target/release/denort.dll }",
               "}",
-              `target/release/deno.exe -A tools/release/create_symcache.ts target/release/deno-${buildItem.arch}-pc-windows-msvc.symcache`,
+              `target/release/saurius.exe -A tools/release/create_symcache.ts target/release/deno-${buildItem.arch}-pc-windows-msvc.symcache`,
             ],
           },
           {
@@ -944,7 +944,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               'echo "Generating delta from $PREV_VERSION for $TARGET"',
               'curl -fSL -o prev.zip "https://github.com/denoland/deno/releases/download/v${PREV_VERSION}/deno-${TARGET}.zip" || { echo "Previous release not found, skipping delta"; exit 0; }',
               "unzip -o prev.zip -d prev/",
-              './target/release/bsdiff_helper prev/deno target/release/deno "target/release/deno-${TARGET}.from-${PREV_VERSION}.bsdiff"',
+              './target/release/bsdiff_helper prev/deno target/release/saurius "target/release/deno-${TARGET}.from-${PREV_VERSION}.bsdiff"',
               'cd target/release && shasum -a 256 "deno-${TARGET}.from-${PREV_VERSION}.bsdiff" > "deno-${TARGET}.from-${PREV_VERSION}.bsdiff.sha256sum"',
             ],
           },
@@ -958,7 +958,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               'echo "Generating delta from $PREV_VERSION for $TARGET"',
               'curl -fSL -o prev.zip "https://github.com/denoland/deno/releases/download/v${PREV_VERSION}/deno-${TARGET}.zip" || { echo "Previous release not found, skipping delta"; exit 0; }',
               "unzip -o prev.zip -d prev/",
-              './target/release/bsdiff_helper prev/deno target/release/deno "target/release/deno-${TARGET}.from-${PREV_VERSION}.bsdiff"',
+              './target/release/bsdiff_helper prev/deno target/release/saurius "target/release/deno-${TARGET}.from-${PREV_VERSION}.bsdiff"',
               'cd target/release && shasum -a 256 "deno-${TARGET}.from-${PREV_VERSION}.bsdiff" > "deno-${TARGET}.from-${PREV_VERSION}.bsdiff.sha256sum"',
             ],
           },
@@ -974,7 +974,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               'try { Invoke-WebRequest -Uri "https://github.com/denoland/deno/releases/download/v$PrevVersion/deno-$Target.zip" -OutFile prev.zip } catch { Write-Host "Previous release not found, skipping delta"; exit 0 }',
               "Remove-Item -Recurse -Force prev -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Path prev | Out-Null",
               "Expand-Archive -Force -Path prev.zip -DestinationPath prev",
-              '& .\\target\\release\\bsdiff_helper.exe "prev\\deno.exe" "target\\release\\deno.exe" "target\\release\\deno-$Target.from-$PrevVersion.bsdiff"',
+              '& .\\target\\release\\bsdiff_helper.exe "prev\\deno.exe" "target\\release\\saurius.exe" "target\\release\\deno-$Target.from-$PrevVersion.bsdiff"',
               'Get-FileHash "target\\release\\deno-$Target.from-$PrevVersion.bsdiff" -Algorithm SHA256 | Format-List > "target\\release\\deno-$Target.from-$PrevVersion.bsdiff.sha256sum"',
             ],
           },
@@ -994,7 +994,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
         );
         const packagesToBuild = ["deno", "denort", "test_server"]
           .map((name) => `-p ${name}`).join(" ");
-        const binsToBuild = ["deno", "denort", "test_server"]
+        const binsToBuild = ["saurius", "denort", "test_server"]
           .map((name) => `--bin ${name}`).join(" ");
         const cargoBuildReleaseCommand =
           `cargo build${buildStdArgs} --release --locked ${packagesToBuild} ${binsToBuild} --features=${panicTraceFeatures}`;
@@ -1071,16 +1071,16 @@ const buildJobs = buildItems.map((rawBuildItem) => {
                 if: runStartupOrder,
                 run: rawBuildItem.os === "macos"
                   ? [
-                    "cp -p target/release/deno target/release/deno-before-startup-order",
-                    "target/release/deno run -A tools/startup_order/generate_macos_function_orderfile.ts \\",
+                    "cp -p target/release/saurius target/release/deno-before-startup-order",
+                    "target/release/saurius run -A tools/startup_order/generate_macos_function_orderfile.ts \\",
                     "  --binary $GITHUB_WORKSPACE/target/release/deno-before-startup-order \\",
                     `  --output $GITHUB_WORKSPACE/${startupOrderPath} \\`,
                     "  --repeats 3 \\",
                     "  --workload-profile run-first",
                   ]
                   : [
-                    "cp -p target/release/deno target/release/deno-before-startup-order",
-                    "target/release/deno run -A tools/startup_order/generate_linux_function_orderfile.ts \\",
+                    "cp -p target/release/saurius target/release/deno-before-startup-order",
+                    "target/release/saurius run -A tools/startup_order/generate_linux_function_orderfile.ts \\",
                     "  --binary $GITHUB_WORKSPACE/target/release/deno-before-startup-order \\",
                     `  --output $GITHUB_WORKSPACE/${startupOrderPath} \\`,
                     "  --repeats 3 \\",
@@ -1101,9 +1101,9 @@ const buildJobs = buildItems.map((rawBuildItem) => {
                 name: "Verify startup order",
                 if: runStartupOrder,
                 run: [
-                  "target/release/deno run -A tools/startup_order/verify_orderfile.ts \\",
+                  "target/release/saurius run -A tools/startup_order/verify_orderfile.ts \\",
                   "  --baseline-binary target/release/deno-before-startup-order \\",
-                  "  --binary target/release/deno \\",
+                  "  --binary target/release/saurius \\",
                   `  --order ${startupOrderPath} \\`,
                   `  --output ${startupOrderPath}.verify.json`,
                 ],
@@ -1131,7 +1131,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               name: "Check release snapshot flags",
               if: isLinux,
               run: [
-                "if strings target/release/deno | grep -F -- '--no-lazy --no-lazy-eval --no-lazy-streaming'; then",
+                "if strings target/release/saurius | grep -F -- '--no-lazy --no-lazy-eval --no-lazy-streaming'; then",
                 '  echo "release deno binary contains eager snapshot flags"',
                 "  exit 1",
                 "fi",
@@ -1155,9 +1155,9 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             {
               name: "Generate symcache",
               run: [
-                "target/release/deno -A tools/release/create_symcache.ts ./deno.symcache",
+                "target/release/saurius -A tools/release/create_symcache.ts ./deno.symcache",
                 "du -h deno.symcache",
-                "du -h target/release/deno",
+                "du -h target/release/saurius",
               ],
               env: { NO_COLOR: 1 },
             },
@@ -1167,7 +1167,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               if: isMainOrTag,
               run: [
                 `du -hd1 "./target/${buildItem.profile}"`,
-                `du -ha  "./target/${buildItem.profile}/deno"`,
+                `du -ha  "./target/${buildItem.profile}/saurius"`,
                 `du -ha  "./target/${buildItem.profile}/denort"`,
               ],
             },
@@ -1211,7 +1211,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               // of our build mode
               name: "Check deno binary",
               run:
-                `target/${buildItem.profile}/deno eval "console.log(1+2)" | grep 3`,
+                `target/${buildItem.profile}/saurius eval "console.log(1+2)" | grep 3`,
               env: { NO_COLOR: 1 },
             },
             {
@@ -1219,7 +1219,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               name: "Check deno binary (in sysroot)",
               if: buildItem.use_sysroot,
               run:
-                `sudo chroot /sysroot "$(pwd)/target/${buildItem.profile}/deno" --version`,
+                `sudo chroot /sysroot "$(pwd)/target/${buildItem.profile}/saurius" --version`,
             },
             denoArtifact.upload(),
             denortArtifact.upload(),
@@ -1468,7 +1468,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             ),
             run: [
               'DENO_BIN=""',
-              "for c in ./target/release/deno ./target/release/deno.exe ./target/debug/deno ./target/debug/deno.exe; do",
+              "for c in ./target/release/saurius ./target/release/saurius.exe ./target/debug/saurius ./target/debug/saurius.exe; do",
               '  [ -f "$c" ] && DENO_BIN="$c" && break',
               "done",
               '"$DENO_BIN" run -A ./tools/download_tsc.ts',
@@ -1670,7 +1670,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
           {
             name: "Run web platform tests (debug)",
             if: isDebug,
-            env: { DENO_BIN: "./target/debug/deno" },
+            env: { DENO_BIN: "./target/debug/saurius" },
             run: [
               "deno run -RWNE --allow-run --lock=tools/deno.lock.json --config tests/config/deno.json \\",
               "    ./tests/wpt/wpt.ts setup",
@@ -1682,7 +1682,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             name: "Run web platform tests (release)",
             if: isRelease,
             env: {
-              DENO_BIN: "./target/release/deno",
+              DENO_BIN: "./target/release/saurius",
             },
             run: [
               "deno run -RWNE --allow-run --lock=tools/deno.lock.json --config tests/config/deno.json \\",
@@ -1695,7 +1695,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
             name: "Autobahn testsuite",
             if: isRelease,
             run:
-              "target/release/deno run -A --config tests/config/deno.json ext/websocket/autobahn/fuzzingclient.js",
+              "target/release/saurius run -A --config tests/config/deno.json ext/websocket/autobahn/fuzzingclient.js",
           },
           step({
             name: "Upload wpt results to dl.deno.land",
@@ -1724,7 +1724,7 @@ const buildJobs = buildItems.map((rawBuildItem) => {
               GITHUB_TOKEN: "${{ secrets.DENOBOT_PAT }}",
             },
             run: [
-              "./target/release/deno run --allow-all --lock=tools/deno.lock.json \\",
+              "./target/release/saurius run --allow-all --lock=tools/deno.lock.json \\",
               "    ./tools/upload_wptfyi.js $(git rev-parse HEAD) --ghstatus",
             ],
           },
@@ -1804,7 +1804,7 @@ const benchJob = job(
             "git clone --depth 1 --branch gh-pages                             \\",
             "    https://${DENOBOT_PAT}@github.com/denoland/benchmark_data.git \\",
             "    gh-pages",
-            "./target/release/deno run --allow-all ./tools/build_benchmark_jsons.js --release",
+            "./target/release/saurius run --allow-all ./tools/build_benchmark_jsons.js --release",
             "cd gh-pages",
             'git config user.email "propelml@gmail.com"',
             'git config user.name "denobot"',

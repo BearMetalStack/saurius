@@ -27,7 +27,7 @@ and hot swap `init_ops_and_esm` function into the previously built `deno` bin.
 cargo plonk run \
   --package deno_webgpu \
   --symbol init_ops_and_esm \
-  --bin deno \
+  --bin saurius \
   --watch
 ```
 

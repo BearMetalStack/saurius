@@ -102,9 +102,9 @@ Build and preserve the baseline release executable:
 ```sh
 unset DENO_USE_STARTUP_ORDER DENO_STARTUP_ORDER_FILE
 DENO_SNAPSHOT_MINIFY_SOURCES=1 \
-  cargo build --release --locked -p deno --bin deno \
+  cargo build --release --locked -p deno --bin saurius \
     --features=deno/panic-trace
-cp -p target/release/deno target/release/deno-before-startup-order
+cp -p target/release/saurius target/release/deno-before-startup-order
 ```
 
 Generate the Linux order:
@@ -112,7 +112,7 @@ Generate the Linux order:
 ```sh
 TARGET="$(uname -m)-unknown-linux-gnu"
 ORDER="$PWD/target/release/startup-order-$TARGET.order"
-target/release/deno run -A \
+target/release/saurius run -A \
   tools/startup_order/generate_linux_function_orderfile.ts \
   --binary "$PWD/target/release/deno-before-startup-order" \
   --output "$ORDER" \
@@ -124,7 +124,7 @@ Generate the macOS order:
 
 ```sh
 ORDER="$PWD/target/release/startup-order-aarch64-apple-darwin.order"
-target/release/deno run -A \
+target/release/saurius run -A \
   tools/startup_order/generate_macos_function_orderfile.ts \
   --binary "$PWD/target/release/deno-before-startup-order" \
   --output "$ORDER" \
@@ -138,16 +138,16 @@ Relink `deno`:
 DENO_SNAPSHOT_MINIFY_SOURCES=1 \
 DENO_USE_STARTUP_ORDER=1 \
 DENO_STARTUP_ORDER_FILE="$ORDER" \
-  cargo build --release --locked -p deno --bin deno \
+  cargo build --release --locked -p deno --bin saurius \
     --features=deno/panic-trace
 ```
 
 Verify the result before stripping the executable:
 
 ```sh
-target/release/deno run -A tools/startup_order/verify_orderfile.ts \
+target/release/saurius run -A tools/startup_order/verify_orderfile.ts \
   --baseline-binary target/release/deno-before-startup-order \
-  --binary target/release/deno \
+  --binary target/release/saurius \
   --order "$ORDER" \
   --output "$ORDER.verify.json"
 ```

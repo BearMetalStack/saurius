@@ -1635,7 +1635,10 @@ Deno.test("inspector_runtime_evaluate_does_not_crash", async () => {
     await tester.assertStderrForInspect();
 
     const banner = await tester.nextStdoutLine();
-    assert(banner.startsWith("Deno"), `Expected Deno banner, got: ${banner}`);
+    assert(
+      banner.startsWith("Saurius"),
+      `Expected Saurius banner, got: ${banner}`,
+    );
     const exitMsg = await tester.nextStdoutLine();
     assertEquals(exitMsg, "exit using ctrl+d, ctrl+c, or close()");
 

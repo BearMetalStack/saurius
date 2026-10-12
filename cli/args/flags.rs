@@ -753,14 +753,15 @@ pub fn flags_from_vec_with_initial_cwd(
   }
 }
 
-/// Render the text printed by `deno --version` (`long`) and `deno -V` (short).
+/// Render the text printed by `saurius --version` (`long`) and `saurius -V`
+/// (short).
 /// Both forms are prefixed with the binary name and terminated by a newline,
 /// matching what clap's `render_long_version` / `render_version` used to emit.
 pub fn render_version(long: bool) -> String {
   if long {
     debug_assert_eq!(DENO_VERSION_INFO.typescript, deno_snapshots::TS_VERSION);
     format!(
-      "deno {} ({}, {}, {})\nv8 {}\ntypescript {}\n",
+      "saurius {} ({}, {}, {})\nv8 {}\ntypescript {}\n",
       DENO_VERSION_INFO.deno,
       DENO_VERSION_INFO.release_channel.name(),
       env!("PROFILE"),
@@ -769,7 +770,7 @@ pub fn render_version(long: bool) -> String {
       DENO_VERSION_INFO.typescript,
     )
   } else {
-    format!("deno {}\n", DENO_VERSION_INFO.deno)
+    format!("saurius {}\n", DENO_VERSION_INFO.deno)
   }
 }
 
@@ -818,12 +819,13 @@ pub fn handle_dynamic_shell_completion(shell: &str) -> Result<(), AnyError> {
   let completer = std::env::args_os()
     .next()
     .map(|s| s.to_string_lossy().into_owned())
-    .unwrap_or_else(|| "deno".to_string());
+    .unwrap_or_else(|| "saurius".to_string());
   let completer = shlex::try_quote(&completer)
     .map(|c| c.into_owned())
     .unwrap_or(completer);
-  let script =
-    deno_cli_parser::completions::generate_dynamic(shell, "deno", &completer);
+  let script = deno_cli_parser::completions::generate_dynamic(
+    shell, "saurius", &completer,
+  );
   deno_print::drop_write_stdout(&script);
   Ok(())
 }

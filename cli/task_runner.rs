@@ -183,10 +183,14 @@ pub async fn run_task(
     .with_context(|| format!("Error parsing script '{}'.", opts.task_name))?;
   let env_vars =
     prepare_env_vars(opts.env_vars, opts.init_cwd, opts.node_modules_bin_dirs);
-  if !opts.custom_commands.contains_key("deno") {
-    opts
-      .custom_commands
-      .insert("deno".to_string(), Rc::new(DenoCommand::default()));
+  // `saurius` and the legacy `deno` name both resolve to this executable, so
+  // existing tasks that call `deno ...` keep working.
+  for name in ["saurius", "deno"] {
+    if !opts.custom_commands.contains_key(name) {
+      opts
+        .custom_commands
+        .insert(name.to_string(), Rc::new(DenoCommand::default()));
+    }
   }
   let state = deno_task_shell::ShellState::new(
     env_vars,

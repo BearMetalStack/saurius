@@ -26,7 +26,7 @@ fn generate_bash(cmd: &CommandDef) -> Vec<u8> {
   let subcmd_list = subcmds.join(" ");
 
   out.push_str(&format!(
-    r#"_deno() {{
+    r#"_{name}() {{
     local i cur prev opts cmds
     COMPREPLY=()
     cur="${{COMP_WORDS[COMP_CWORD]}}"
@@ -155,7 +155,9 @@ fn generate_zsh(cmd: &CommandDef) -> Vec<u8> {
   out.push_str(&format!("#compdef {name}\n\n"));
 
   // Subcommands
-  out.push_str("_deno_commands() {\n    local commands; commands=(\n");
+  out.push_str(&format!(
+    "_{name}_commands() {{\n    local commands; commands=(\n"
+  ));
   for sub in cmd.subcommands {
     if sub.name == "help" {
       continue;
@@ -171,9 +173,9 @@ fn generate_zsh(cmd: &CommandDef) -> Vec<u8> {
       .replace('\'', "'\\''");
     out.push_str(&format!("        '{}:{}'\n", sub.name, about));
   }
-  out.push_str(
-    "    )\n    _describe -t commands 'deno commands' commands\n}\n\n",
-  );
+  out.push_str(&format!(
+    "    )\n    _describe -t commands '{name} commands' commands\n}}\n\n"
+  ));
 
   // `deno [flags] <script>` runs the default subcommand, so the first
   // positional can be either a subcommand or a script file.
@@ -181,9 +183,9 @@ fn generate_zsh(cmd: &CommandDef) -> Vec<u8> {
     .default_subcommand
     .and_then(|name| cmd.find_subcommand(name));
   if default_sub.is_some() {
-    out.push_str(
-      "_deno_commands_or_files() {\n    _alternative \\\n        'commands:command:_deno_commands' \\\n        'files:file:_files'\n}\n\n",
-    );
+    out.push_str(&format!(
+      "_{name}_commands_or_files() {{\n    _alternative \\\n        'commands:command:_{name}_commands' \\\n        'files:file:_files'\n}}\n\n"
+    ));
   }
 
   // Main function
@@ -206,9 +208,9 @@ fn generate_zsh(cmd: &CommandDef) -> Vec<u8> {
   }
 
   if default_sub.is_some() {
-    out.push_str("        \":: :_deno_commands_or_files\" \\\n");
+    out.push_str(&format!("        \":: :_{name}_commands_or_files\" \\\n"));
   } else {
-    out.push_str("        \":: :_deno_commands\" \\\n");
+    out.push_str(&format!("        \":: :_{name}_commands\" \\\n"));
   }
   out.push_str("        \"*::arg:->args\" \\\n");
   out.push_str("        && ret=0\n\n");
@@ -238,7 +240,7 @@ fn generate_zsh(cmd: &CommandDef) -> Vec<u8> {
   if default_sub.is_some() {
     // Anything else in the first position is a script for the default
     // subcommand; complete its arguments as files. The script itself is
-    // already handled by `_deno_commands_or_files` above.
+    // already handled by `_{name}_commands_or_files` above.
     out.push_str(
       "        *)\n            (( CURRENT > 1 )) && _files\n            ;;\n",
     );
@@ -787,7 +789,7 @@ mod tests {
   fn generate_bash_uses_real_newlines() {
     let s = String::from_utf8(generate("bash", &DENO_ROOT)).unwrap();
     assert!(
-      s.contains("\"deno,run\")\n                cmd=\"deno__run\""),
+      s.contains("\"saurius,run\")\n                cmd=\"saurius__run\""),
       "{s}"
     );
     assert!(s.contains("            *)\n                ;;"), "{s}");
@@ -818,15 +820,16 @@ mod tests {
     // script paths never completed for a bare `deno [flags] <script>`.
     let s =
       String::from_utf8(generate("zsh", &crate::defs::DENO_ROOT)).unwrap();
-    assert!(s.contains("_deno_commands_or_files() {"), "{s}");
+    assert!(s.contains("_saurius_commands_or_files() {"), "{s}");
     assert!(s.contains("'files:file:_files'"), "{s}");
-    assert!(s.contains("\":: :_deno_commands_or_files\""), "{s}");
+    assert!(s.contains("\":: :_saurius_commands_or_files\""), "{s}");
     assert!(
       s.contains("        *)\n            (( CURRENT > 1 )) && _files\n"),
       "{s}"
     );
     // The default subcommand's flags are accepted at the root.
-    let root = &s[s.find("_deno() {").unwrap()..s.find("case $state").unwrap()];
+    let root =
+      &s[s.find("_saurius() {").unwrap()..s.find("case $state").unwrap()];
     assert!(root.contains("'--watch["), "{root}");
     assert_eq!(root.matches("'--env-file[").count(), 1, "{root}");
   }

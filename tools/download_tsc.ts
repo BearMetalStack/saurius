@@ -22,7 +22,7 @@
 //   export DENO_TSC_BIN=$(deno run -A tools/download_tsc.ts)
 //
 // The `deno` binary to use is taken from the `DENO_BIN` env var, else the first
-// of `./target/release/deno` or `./target/debug/deno` that exists.
+// of `./target/release/saurius` or `./target/debug/saurius` that exists.
 
 const exe = Deno.build.os === "windows" ? ".exe" : "";
 
@@ -37,7 +37,7 @@ function resolveDenoBin(): string {
   const fromEnv = Deno.env.get("DENO_BIN");
   if (fromEnv) return Deno.realPathSync(fromEnv);
   for (const profile of ["release", "debug"]) {
-    const candidate = `./target/${profile}/deno${exe}`;
+    const candidate = `./target/${profile}/saurius${exe}`;
     try {
       return Deno.realPathSync(candidate);
     } catch {

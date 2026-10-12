@@ -61,13 +61,13 @@ to JavaScript — for instance filesystem operations and networking.
 cargo check
 
 # Build debug binary
-cargo build --bin deno
+cargo build --bin saurius
 
 # Build release version (slow, optimized)
 cargo build --release
 
 # Run the dev build
-./target/debug/deno eval 'console.log("Hello from dev build")'
+./target/debug/saurius eval 'console.log("Hello from dev build")'
 ```
 
 ## Code Quality
@@ -108,7 +108,7 @@ cargo test <nameOfTest>
 cargo test -p deno_core
 
 # Run just the CLI integration tests
-cargo test --bin deno
+cargo test --bin saurius
 
 # Run spec tests only
 cargo test specs
@@ -211,16 +211,16 @@ The validation script is at `tools/verify_pr_title.js`.
 
 ```bash
 # Verbose logging
-DENO_LOG=debug ./target/debug/deno run script.ts
+DENO_LOG=debug ./target/debug/saurius run script.ts
 
 # Module-specific logging
-DENO_LOG=deno_core=debug ./target/debug/deno run script.ts
+DENO_LOG=deno_core=debug ./target/debug/saurius run script.ts
 
 # Full backtrace on panic
-RUST_BACKTRACE=1 ./target/debug/deno run script.ts
+RUST_BACKTRACE=1 ./target/debug/saurius run script.ts
 
 # V8 inspector
-./target/debug/deno run --inspect-brk script.ts
+./target/debug/saurius run --inspect-brk script.ts
 ```
 
 In Rust code: `eprintln!("Debug: {:?}", var);` or `dbg!(var);`
@@ -344,7 +344,7 @@ difference may be intentional.
 
 ## Troubleshooting
 
-- **Slow compile times**: Use `cargo check`, `--bin deno`, or `sccache`
+- **Slow compile times**: Use `cargo check`, `--bin saurius`, or `sccache`
 - **Build failures on macOS**: Run `xcode-select --install`
 - **Build failures on Linux**: Install `build-essential`
 - **Spec test failures**: Check output diffs, use `[WILDCARD]` for

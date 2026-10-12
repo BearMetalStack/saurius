@@ -79,26 +79,26 @@ cargo build
 For faster iteration during development (less optimization):
 
 ```bash
-cargo build --bin deno
+cargo build --bin saurius
 ```
 
 Execute your development build:
 
 ```bash
-./target/debug/deno eval 'console.log("Hello from dev build")'
+./target/debug/saurius eval 'console.log("Hello from dev build")'
 ```
 
 ### Running with your changes
 
 ```bash
 # Run a local file
-./target/debug/deno run path/to/file.ts
+./target/debug/saurius run path/to/file.ts
 
 # Run with permissions
-./target/debug/deno run --allow-net --allow-read script.ts
+./target/debug/saurius run --allow-net --allow-read script.ts
 
 # Run the REPL
-./target/debug/deno
+./target/debug/saurius
 ```
 
 ## Commands
@@ -144,7 +144,7 @@ cargo test <nameOfTest>
 cargo test -p deno_core
 
 # Run just the CLI integration tests
-cargo test --bin deno
+cargo test --bin saurius
 
 # Run spec tests only
 cargo test specs
@@ -172,8 +172,8 @@ cargo test unit_node::crypto_test
 cargo test unit_node::
 ```
 
-Do NOT run these directly with `./target/debug/deno test` — they depend on the
-cargo test harness for correct setup.
+Do NOT run these directly with `./target/debug/saurius test` — they depend on
+the cargo test harness for correct setup.
 
 ### Test Organization
 
@@ -304,7 +304,7 @@ cargo outdated  # Requires cargo-outdated
 Use `lldb` directly:
 
 ```bash
-lldb ./target/debug/deno
+lldb ./target/debug/saurius
 (lldb) run eval 'console.log("test")'
 ```
 
@@ -316,10 +316,10 @@ Use println debugging.
 
 ```bash
 # Set Rust log level
-DENO_LOG=debug ./target/debug/deno run script.ts
+DENO_LOG=debug ./target/debug/saurius run script.ts
 
 # Specific module logging
-DENO_LOG=deno_core=debug ./target/debug/deno run script.ts
+DENO_LOG=deno_core=debug ./target/debug/saurius run script.ts
 ```
 
 ### Debug Prints
@@ -408,7 +408,7 @@ prerequisites in
 **Slow compile times**
 
 - Use `cargo check` instead of `cargo build` when possible
-- Use `--bin deno` to build only the main binary
+- Use `--bin saurius` to build only the main binary
 - Use `sccache` or `mold` linker for faster builds
 - Consider using `cargo-watch` for incremental builds
 

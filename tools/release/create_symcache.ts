@@ -20,7 +20,9 @@ if (Deno.build.os === "windows") {
 
 const outfile = Deno.args[0];
 if (!outfile) {
-  console.error("Usage: ./target/release/deno -A create_symcache.ts <outfile>");
+  console.error(
+    "Usage: ./target/release/saurius -A create_symcache.ts <outfile>",
+  );
   Deno.exit(1);
 }
 

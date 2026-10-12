@@ -67,9 +67,10 @@ fn is_node_arg0(arg0: &OsString) -> bool {
   let Some(file_name) = Path::new(arg0).file_name() else {
     return false;
   };
-  // Never misfire on the deno binary itself.
-  if file_name.eq_ignore_ascii_case("deno")
-    || file_name.eq_ignore_ascii_case("deno.exe")
+  // Never misfire on the saurius (or legacy deno) binary itself.
+  if ["saurius", "saurius.exe", "deno", "deno.exe"]
+    .iter()
+    .any(|name| file_name.eq_ignore_ascii_case(name))
   {
     return false;
   }
@@ -133,7 +134,7 @@ pub fn maybe_rewrite_node_arg0(args: Vec<OsString>) -> Vec<OsString> {
   // plain `deno eval` without re-entering arg0 dispatch.
   #[allow(clippy::disallowed_methods, reason = "resolving the node shim exe")]
   let current_exe =
-    std::env::current_exe().unwrap_or_else(|_| PathBuf::from("deno"));
+    std::env::current_exe().unwrap_or_else(|_| PathBuf::from("saurius"));
   node_shim::resolve_run_entrypoint(&current_exe, &mut deno_args);
 
   // `deno_args[0]` is the program-name slot ("node") that deno's flag parser

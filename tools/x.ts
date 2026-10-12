@@ -111,18 +111,18 @@ modify Rust code, to ensure you have working binaries for development and
 testing.
 
 Under the hood:
-  cargo build --bin deno --bin test_server`,
+  cargo build --bin saurius --bin test_server`,
       async fn(_args: string[]) {
         $.logStep("Setting up development environment...");
         $.logStep("Building deno and test_server...");
-        await $`cargo build --bin deno --bin test_server`.cwd(root);
+        await $`cargo build --bin saurius --bin test_server`.cwd(root);
         $.logStep("Setup complete.");
       },
     },
     "build": {
       description: "Build the deno binary (debug mode)",
       help: `Compiles the main 'deno' binary in debug mode (unoptimized, with
-debug symbols). The resulting binary is placed at ./target/debug/deno.
+debug symbols). The resulting binary is placed at ./target/debug/saurius.
 
 Use this during normal development iteration. For a release-optimized
 build, run 'cargo build --release' directly.
@@ -132,10 +132,10 @@ binary, use './x check' instead — it is significantly faster because
 it skips the linking step.
 
 Under the hood:
-  cargo build --bin deno`,
+  cargo build --bin saurius`,
       async fn(_args: string[]) {
         $.logStep("Building Deno...");
-        await $`cargo build --bin deno`.cwd(root);
+        await $`cargo build --bin saurius`.cwd(root);
         $.logStep("Build complete.");
       },
     },
@@ -341,7 +341,7 @@ Under the hood:
         $.logStep("Running NAPI tests...");
         const filter = args.length > 0 ? args.map((a) => `--filter=${a}`) : [];
         await $`${
-          root.join("target/debug/deno").toString()
+          root.join("target/debug/saurius").toString()
         } test --allow-read --allow-env --allow-ffi --allow-run --v8-flags=--expose-gc --config ${
           root.join("tests/config/deno.json").toString()
         } --no-lock ${filter} .`.cwd(root.join("tests/napi"));

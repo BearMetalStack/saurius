@@ -34,7 +34,7 @@ fn help_output() {
     "Run tests",
     "Publish the current working directory's package or workspace",
     #[cfg(feature = "upgrade")]
-    "Upgrade deno executable to given version",
+    "Upgrade saurius executable to given version",
   ];
 
   for description in subcommand_descriptions {

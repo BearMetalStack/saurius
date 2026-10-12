@@ -603,7 +603,7 @@ pub static LOCK_ARGS: &[ArgDef] = &[
 // ============================================================
 
 // Shared between `run` and its alias-like `watch` subcommand
-// (`deno watch` == `deno run --watch-hmr`).
+// (`saurius watch` == `saurius run --watch-hmr`).
 static RUN_ARGS: &[ArgDef] = &[
   ArgDef::new("script_arg")
     .positional()
@@ -615,7 +615,7 @@ static RUN_ARGS: &[ArgDef] = &[
     .action(ArgAction::Set)
     .num_args(NumArgs::Optional)
     .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
   ArgDef::new("watch")
     .long("watch")
     .action(ArgAction::Append)
@@ -761,7 +761,7 @@ pub static SERVE_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("watch")
       .long("watch")
       .action(ArgAction::Append)
@@ -853,7 +853,7 @@ pub static EVAL_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
   ],
   arg_groups: &[
     UNSTABLE_DEPRECATED_ARG, UNSTABLE_FEATURE_ARGS,
@@ -1150,7 +1150,7 @@ pub static TEST_SUBCOMMAND: CommandDef = CommandDef {
       .conflicts_with(&["inspect", "inspect-brk", "inspect-wait"])
 .help("Collect coverage profile data into DIR. If DIR is not specified, it uses 'coverage/'.\n  This option can also be set via the DENO_COVERAGE_DIR environment variable."),
     ArgDef::new("clean").long("clean").set_true()
-.help("Empty the temporary coverage profile data directory before running tests.\n  Note: running multiple `deno test --clean` calls in series or parallel for the same coverage directory may cause race conditions."),
+.help("Empty the temporary coverage profile data directory before running tests.\n  Note: running multiple `saurius test --clean` calls in series or parallel for the same coverage directory may cause race conditions."),
     ArgDef::new("fail-fast")
       .long("fail-fast")
       .action(ArgAction::Set)
@@ -1295,7 +1295,7 @@ pub static TEST_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
   ],
   arg_groups: &[
     UNSTABLE_DEPRECATED_ARG, UNSTABLE_FEATURE_ARGS,
@@ -1314,7 +1314,7 @@ pub static TEST_SUBCOMMAND: CommandDef = CommandDef {
 
 pub static UPGRADE_SUBCOMMAND: CommandDef = CommandDef {
   name: "upgrade",
-  about: "Upgrade deno executable to given version",
+  about: "Upgrade saurius executable to given version",
   aliases: &[],
   args: &[
     ArgDef::new("dry-run").long("dry-run").set_true()
@@ -1398,7 +1398,7 @@ pub static CACHE_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("ext")
       .long("ext")
       .action(ArgAction::Set)
@@ -1455,7 +1455,7 @@ pub static CHECK_SUBCOMMAND: CommandDef = CommandDef {
     ArgDef::new("check-js").long("check-js").set_true().hidden()
 .help("Enable type-checking of JavaScript files (equivalent to `compilerOptions.checkJs: true`)"),
     ArgDef::new("desktop").long("desktop").set_true()
-.help("Type-check using the type definitions for `deno desktop`"),
+.help("Type-check using the type definitions for `saurius desktop`"),
     ArgDef::new("no-code-cache")
       .long("no-code-cache")
       .set_true()
@@ -1735,7 +1735,7 @@ pub static BENCH_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("ext")
       .long("ext")
       .action(ArgAction::Set)
@@ -1845,7 +1845,7 @@ pub static COMPILE_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("watch")
       .long("watch")
       .action(ArgAction::Append)
@@ -1940,7 +1940,7 @@ pub static COVERAGE_SUBCOMMAND: CommandDef = CommandDef {
 
 pub static REPL_SUBCOMMAND: CommandDef = CommandDef {
   name: "repl",
-  about: "Start an interactive Read-Eval-Print Loop (REPL) for Deno",
+  about: "Start an interactive Read-Eval-Print Loop (REPL) for Saurius",
   aliases: &[],
   args: &[
     ArgDef::new("eval")
@@ -2110,7 +2110,7 @@ pub static INSTALL_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
   ],
   arg_groups: &[
     UNSTABLE_DEPRECATED_ARG, UNSTABLE_FEATURE_ARGS,
@@ -2193,7 +2193,7 @@ pub static COMPLETIONS_SUBCOMMAND: CommandDef = CommandDef {
         "fig",
       ])),
     ArgDef::new("dynamic").long("dynamic").set_true()
-.help("Generate dynamic completions for the given shell (unstable), currently this only provides available tasks for `deno task`."),
+.help("Generate dynamic completions for the given shell (unstable), currently this only provides available tasks for `saurius task`."),
   ],
   arg_groups: &[UNSTABLE_DEPRECATED_ARG, UNSTABLE_FEATURE_ARGS],
   subcommands: &[],
@@ -2221,7 +2221,7 @@ pub static INIT_SUBCOMMAND: CommandDef = CommandDef {
       .long("serve")
       .set_true()
       .conflicts_with(&["lib"])
-      .help("Generate an example project for `deno serve`"),
+      .help("Generate an example project for `saurius serve`"),
     ArgDef::new("npm")
       .long("npm")
       .set_true()
@@ -2370,7 +2370,7 @@ pub static PUBLISH_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("env-file")
       .long("env-file")
       .long_aliases(&["env"])
@@ -2841,7 +2841,7 @@ pub static BUNDLE_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
   ],
   arg_groups: &[
     COMPILE_ARGS,
@@ -2946,7 +2946,7 @@ pub static X_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Enable type-checking. This subcommand does not type-check by default; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("env-file")
       .long("env-file")
       .action(ArgAction::Append)
@@ -3057,7 +3057,7 @@ pub static DESKTOP_SUBCOMMAND: CommandDef = CommandDef {
       .action(ArgAction::Set)
       .num_args(NumArgs::Optional)
       .require_equals()
-.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'deno check' subcommand."),
+.help("Set type-checking behavior. This subcommand type-checks local modules by default, so passing --check is redundant; pass --check=all to also type-check remote modules. Alternatively, use the 'saurius check' subcommand."),
     ArgDef::new("inspect-renderer")
       .long("inspect-renderer")
       .action(ArgAction::Set)
@@ -3457,8 +3457,12 @@ pub static SYNC_TYPES_SUBCOMMAND: CommandDef = CommandDef {
   keep_double_dash: false,
 };
 
+/// Name of the executable, used for the root command, usage lines and shell
+/// completions.
+pub const BIN_NAME: &str = "saurius";
+
 pub static DENO_ROOT: CommandDef = CommandDef {
-  name: "deno",
+  name: BIN_NAME,
   about: "A modern JavaScript and TypeScript runtime",
   aliases: &[],
   args: GLOBAL_ARGS,

@@ -294,8 +294,8 @@ pub fn deno_exe_path() -> PathRef {
   if let Ok(path) = std::env::var("DENO_TEST_UTIL_DENO_EXE") {
     return PathRef::new(PathBuf::from(path));
   }
-  // Something like /Users/rld/src/deno/target/debug/deps/deno
-  let mut p = target_dir().join("deno").to_path_buf();
+  // Something like /Users/rld/src/saurius/target/debug/saurius
+  let mut p = target_dir().join("saurius").to_path_buf();
   if cfg!(windows) {
     p.set_extension("exe");
   }
