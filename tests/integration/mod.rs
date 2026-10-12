@@ -72,6 +72,7 @@ mod sqlite_extension;
 mod task;
 #[path = "test_tests.rs"]
 mod test;
+#[cfg(feature = "upgrade")]
 #[path = "upgrade_tests.rs"]
 mod upgrade;
 #[path = "watcher_tests.rs"]

@@ -506,7 +506,7 @@ async fn run_subcommand(
     }),
     #[cfg(not(feature = "upgrade"))]
     DenoSubcommand::Upgrade(_) => exit_with_message(
-      "This deno was built without the \"upgrade\" feature. Please upgrade using the installation method originally used to install Deno.",
+      "This saurius was built without the \"upgrade\" feature. Please upgrade by rebuilding saurius from source.",
       1,
     ),
     DenoSubcommand::Why(why_flags) => spawn_subcommand(async {

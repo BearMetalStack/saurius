@@ -42,15 +42,13 @@ pub async fn serve(
 
   let factory = CliFactory::from_flags(flags);
   let cli_options = factory.cli_options()?;
-  let deno_dir = factory.deno_dir()?;
-  let http_client = factory.http_client_provider();
 
   // Run a background task that checks for available upgrades or output
   // if an earlier run of this background task found a new version of Deno.
   #[cfg(feature = "upgrade")]
   super::upgrade::check_for_upgrades(
-    http_client.clone(),
-    deno_dir.upgrade_check_file_path(),
+    factory.http_client_provider().clone(),
+    factory.deno_dir()?.upgrade_check_file_path(),
   );
 
   let workspace_resolver = factory.workspace_resolver().await?.clone();

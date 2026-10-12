@@ -1,0 +1,5 @@
+{
+  "args": "upgrade",
+  "output": "error: This saurius was built without the \"upgrade\" feature. Please upgrade by rebuilding saurius from source.\n",
+  "exitCode": 1
+}

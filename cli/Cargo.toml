@@ -29,15 +29,17 @@ default = ["v8"]
 # crate name so the engine integration does not require source-level churn.
 v8 = ["__runtime_defaults", "deno_core/v8", "v8/v8"]
 quickjs = ["__runtime_defaults", "deno_core/quickjs", "v8/quickjs"]
-__runtime_defaults = ["upgrade", "__vendored_zlib_ng"]
+# `upgrade` is intentionally not a default: it downloads upstream Deno releases
+# and would replace the saurius binary with deno.
+__runtime_defaults = ["__vendored_zlib_ng"]
 # A feature that enables heap profiling with dhat on Linux.
 # 1. Compile with `cargo build --profile=release-with-debug --features=dhat-heap`
 # 2. Run the executable. It will output a dhat-heap.json file.
 # 3. Open the json file in https://nnethercote.github.io/dh_view/dh_view.html
 dhat-heap = ["dhat"]
 # A feature that enables the upgrade subcommand and the background check for
-# available updates (of deno binary). This is typically disabled for (Linux)
-# distribution packages.
+# available updates. It currently targets upstream Deno's release channels, so
+# it is disabled by default in Saurius.
 upgrade = []
 # A dev feature to disable creations and loading of snapshots in favor of
 # loading JS sources at runtime.

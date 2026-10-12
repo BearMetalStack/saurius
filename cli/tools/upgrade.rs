@@ -2,6 +2,14 @@
 
 //! This module provides feature to upgrade deno executable
 
+#![cfg_attr(
+  not(feature = "upgrade"),
+  allow(
+    dead_code,
+    reason = "without the `upgrade` feature only `upgrade_check_enabled` is used"
+  )
+)]
+
 use std::borrow::Cow;
 use std::env;
 use std::fs;
@@ -315,10 +323,11 @@ async fn print_release_notes(
 }
 
 pub fn upgrade_check_enabled() -> bool {
-  matches!(
-    env::var("DENO_NO_UPDATE_CHECK"),
-    Err(env::VarError::NotPresent)
-  )
+  cfg!(feature = "upgrade")
+    && matches!(
+      env::var("DENO_NO_UPDATE_CHECK"),
+      Err(env::VarError::NotPresent)
+    )
 }
 
 pub fn check_for_upgrades(

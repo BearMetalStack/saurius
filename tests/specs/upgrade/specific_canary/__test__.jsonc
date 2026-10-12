@@ -1,4 +1,7 @@
 {
+  // `upgrade` is disabled by default in Saurius (see the `upgrade` feature in
+  // cli/Cargo.toml).
+  "ignore": true,
   "if": "unix",
   "tempDir": true,
   "steps": [
